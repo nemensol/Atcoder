@@ -20,28 +20,29 @@ int main(){
     gemsByColor[c].push(v);
   }
   
-  // 各色の最大価値を候補として集め、M色ぶん選ぶ
-  priority_queue<pair<int, int>> colorBest;
-  rep(c, 1, n + 1){
-    if(!gemsByColor[c].empty()){
-      colorBest.push({gemsByColor[c].top(), c});
-    }
-  }
-  
-  rep(i, 0, m){
-    auto [value, color] = colorBest.top();
-    colorBest.pop();
-    totalValue += value;
-    gemsByColor[color].pop();
-  }
-  
-  // 残りの宝石をすべて集める
+  // 各色の先頭をtop、残りをjewelsへ集約
+  priority_queue<int> topValues;
   priority_queue<int> jewels;
   rep(c, 1, n + 1){
+    if(!gemsByColor[c].empty()){
+      topValues.push(gemsByColor[c].top());
+      gemsByColor[c].pop();
+    }
+
     while(!gemsByColor[c].empty()){
       jewels.push(gemsByColor[c].top());
       gemsByColor[c].pop();
     }
+  }
+
+  rep(i, 0, m){
+    totalValue += topValues.top();
+    topValues.pop();
+  }
+
+  while(!topValues.empty()){
+    jewels.push(topValues.top());
+    topValues.pop();
   }
 
   // 残りの K - M 個を選ぶ

@@ -25,35 +25,35 @@ int main(){
         sort(gemsByColor[c].begin(), gemsByColor[c].end(), greater<int>());
     }
 
-    // 各色の先頭(最大価値)を候補化してM色選ぶ
-    vector<pair<int, int>> colorBest;
+    // 各色の先頭をtop、それ以外をtailへ集約
+    vector<int> top;
+    top.reserve(n);
+
+    vector<int> tail;
+    tail.reserve(n);
+
     rep(c, 1, n + 1){
         if(!gemsByColor[c].empty()){
-            colorBest.push_back({gemsByColor[c][0], c});
+            top.push_back(gemsByColor[c][0]);
+            rep(i, 1, static_cast<int>(gemsByColor[c].size())){
+                tail.push_back(gemsByColor[c][i]);
+            }
         }
     }
-    sort(colorBest.begin(), colorBest.end(), greater<pair<int, int>>());
 
-    vector<char> usedColor(n + 1, 0);
+    sort(top.begin(), top.end(), greater<int>());
+    rep(i, m, static_cast<int>(top.size())){
+        tail.push_back(top[i]);
+    }
+
+    sort(tail.begin(), tail.end(), greater<int>());
+
     rep(i, 0, m){
-        totalValue += colorBest[i].first;
-        usedColor[colorBest[i].second] = 1;
+        totalValue += top[i];
     }
-
-    // 先頭で使った分以外を集める
-    vector<int> jewels;
-    jewels.reserve(n - m);
-    rep(c, 1, n + 1){
-        rep(i, 0, static_cast<int>(gemsByColor[c].size())){
-            if(usedColor[c] && i == 0) continue;
-            jewels.push_back(gemsByColor[c][i]);
-        }
-    }
-
-    sort(jewels.begin(), jewels.end(), greater<int>());
 
     rep(i, 0, k - m){
-        totalValue += jewels[i];
+        totalValue += tail[i];
     }
 
     cout << totalValue;
